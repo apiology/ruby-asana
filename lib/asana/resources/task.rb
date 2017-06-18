@@ -393,8 +393,10 @@ module Asana
       #
       # options - [Hash] the request I/O options.
       # data - [Hash] the attributes to post.
-      def add_project(project: required("project"), insert_after: nil, insert_before: nil, section: nil, options: {}, **data)
-        with_params = data.merge(project: project, insert_after: insert_after, insert_before: insert_before, section: section).reject { |_,v| v.nil? || Array(v).empty? }
+      def add_project(project: required("project"), insert_after: :not_provided, insert_before: :not_provided, section: nil, options: {}, **data)
+        with_params = data.merge(project: project, insert_after: insert_after, insert_before: insert_before, section: section).reject { |_,v| v.nil? || Array(v).empty? || v == :not_provided }
+        with_params[:insert_after] = nil if insert_after.nil?
+        with_params[:insert_before] = nil if insert_before.nil?
         client.post("/tasks/#{gid}/addProject", body: with_params, options: options) && true
       end
 
